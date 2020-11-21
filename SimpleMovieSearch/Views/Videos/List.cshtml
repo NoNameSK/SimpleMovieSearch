@@ -1,0 +1,11 @@
+﻿<h1>All Videos</h1>
+<h2>@Model.VideoAuthor</h2>
+<div class="row mt-5 mb-2">
+    @{
+        foreach (Video video in Model.AllVideos)
+        {
+            @Html.Partial("_AllVideo", video)
+        }
+    }
+</div>
+

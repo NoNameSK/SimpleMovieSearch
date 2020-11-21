@@ -1,0 +1,11 @@
+﻿@model HomeViewModel
+
+<h1>Favorite Videos</h1>
+<div class="row mt-5 mb-2">
+    @{
+        foreach (Video video in Model.favoriteVideo)
+        {
+            @Html.Partial("_AllVideo", video)
+        }
+    }
+</div>
