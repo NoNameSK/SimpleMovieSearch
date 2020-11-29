@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SimpleMovieSearch.Data;
 using SimpleMovieSearch.Models;
 using SimpleMovieSearch.Services.Interfaces;
 using SimpleMovieSearch.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static SimpleMovieSearch.Helper;
 
 namespace SimpleMovieSearch.Controllers
 {
@@ -13,11 +16,13 @@ namespace SimpleMovieSearch.Controllers
     {
         private readonly IAllVideo _allVideos;
         private readonly IVideoAuthor _allAuthors;
+        private readonly AppDBContent _content;
 
-        public VideosController(IAllVideo iAllVideos, IVideoAuthor iVideosAuthor)
+        public VideosController(IAllVideo iAllVideos, IVideoAuthor iVideosAuthor, AppDBContent content)
         {
             _allVideos = iAllVideos;
             _allAuthors = iVideosAuthor;
+            _content = content;
         }
 
         [Route("Videos/List")]
@@ -58,6 +63,59 @@ namespace SimpleMovieSearch.Controllers
             ViewBag.Title = "Videos";
 
             return View(videoObject);
+        }
+
+        [NoDirectAccess]
+        public async Task<IActionResult> AddOrEdit(int id = 0)
+        {
+            if (id == 0)
+                return View(new Video());
+            else
+            {
+                var video = await _content.Video.FindAsync(id);
+                if (video == null)
+                {
+                    return NotFound();
+                }
+                return View(video);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddOrEdit(int id, [Bind("Id,Image,Title,ShortDescription,LongDescription,IsFavorites,AuthorId")] Video video)
+        {
+            if (ModelState.IsValid)
+            {
+                if (id == 0)
+                {
+                    _content.Add(video);
+                    await _content.SaveChangesAsync();
+
+                }
+                else
+                {
+                    try
+                    {
+                        _content.Update(video);
+                        await _content.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!VideoExists(video.Id))
+                        { return NotFound(); }
+                        else
+                        { throw; }
+                    }
+                }
+                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "List", _content.Video.ToList()) });
+            }
+            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "AddOrEdit", video) });
+        }
+
+        private bool VideoExists(int id)
+        {
+            return _content.Video.Any(e => e.Id == id);
         }
     }
 }

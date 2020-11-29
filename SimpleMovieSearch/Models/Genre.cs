@@ -9,6 +9,7 @@ namespace SimpleMovieSearch.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<Video> Videos { get; set; }
+        public List<Video> Videos { get; set;  } 
+        //public List<Communication> Communications { get; } 
     }
 }

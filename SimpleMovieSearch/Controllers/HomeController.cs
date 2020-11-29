@@ -19,11 +19,11 @@ namespace SimpleMovieSearch.Controllers
 
         public ViewResult Index()
         {
-            var homeVideos = new HomeViewModel
-            {
-                favoriteVideo = _videoRepository.GetFavoriteVideos
-            };
-            return View(homeVideos);
+            //var homeVideos = new HomeViewModel
+            //{
+            //    favoriteVideo = _videoRepository.GetFavoriteVideos
+            //};
+            return View(/*homeVideos*/);
         }
     }
 }

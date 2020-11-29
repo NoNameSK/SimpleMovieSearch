@@ -162,3 +162,4 @@ SimpleMovieSearch/SimpleMovieSearch.csproj.user
 .vs/SimpleMovieSearch/v16/.suo
 .vs/SimpleMovieSearch/DesignTimeBuild/.dtbcache.v2
 .vs/SimpleMovieSearch/config/applicationhost.config
+SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/Videos/AddOrEdit.cshtml.g.cs

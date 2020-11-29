@@ -10,7 +10,7 @@ namespace SimpleMovieSearch.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
-        public ushort Age { get; set; }
+        public int Age { get; set; }
         public string Description { get; set; }
         public List<Video> Videos { get; set; }
     }
