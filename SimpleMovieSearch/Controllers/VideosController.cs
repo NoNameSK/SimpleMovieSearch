@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleMovieSearch.Data;
 using SimpleMovieSearch.Models;
-using SimpleMovieSearch.Services.Interfaces;
 using SimpleMovieSearch.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,55 +13,54 @@ namespace SimpleMovieSearch.Controllers
 {
     public class VideosController : Controller
     {
-        private readonly IAllVideo _allVideos;
-        private readonly IVideoAuthor _allAuthors;
+
         private readonly AppDBContent _content;
 
-        public VideosController(IAllVideo iAllVideos, IVideoAuthor iVideosAuthor, AppDBContent content)
+        public VideosController( AppDBContent content)
         {
-            _allVideos = iAllVideos;
-            _allAuthors = iVideosAuthor;
+
             _content = content;
         }
 
         [Route("Videos/List")]
         [Route("Videos/List/{category}")]
-        public ViewResult List(string author)
+        public async Task<IActionResult> List()
         {
-            string _author = author;
-            IEnumerable<Video> videos = null;
-            string VideoAuthor = "";
-            if (string.IsNullOrEmpty(author))
-            {
-                videos = _allVideos.Videos.OrderBy(i => i.Id);
-            }
-            else
-            {
-                if (string.Equals("Mikle", author, StringComparison.OrdinalIgnoreCase))
-                {
-                    videos = _allVideos.Videos.Where(i => i.Author.Name.Equals("Майкл")).OrderBy(i => i.Id);
-                }
-                else if (string.Equals("Gay", author, StringComparison.OrdinalIgnoreCase))
-                {
-                    videos = _allVideos.Videos.Where(i => i.Author.Name.Equals("Гай")).OrderBy(i => i.Id);
-                }
-                else if (string.Equals("Deny", author, StringComparison.OrdinalIgnoreCase))
-                {
-                    videos = _allVideos.Videos.Where(i => i.Author.Name.Equals("Дени")).OrderBy(i => i.Id);
-                }
+            //string _author = author;
+            //IEnumerable<Video> videos = null;
+            //string VideoAuthor = "";
+            //if (string.IsNullOrEmpty(author))
+            //{
+            //    videos = _allVideos.Videos.OrderBy(i => i.Id);
+            //}
+            //else
+            //{
+            //    if (string.Equals("Mikle", author, StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        videos = _allVideos.Videos.Where(i => i.Author.Name.Equals("Майкл")).OrderBy(i => i.Id);
+            //    }
+            //    else if (string.Equals("Gay", author, StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        videos = _allVideos.Videos.Where(i => i.Author.Name.Equals("Гай")).OrderBy(i => i.Id);
+            //    }
+            //    else if (string.Equals("Deny", author, StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        videos = _allVideos.Videos.Where(i => i.Author.Name.Equals("Дени")).OrderBy(i => i.Id);
+            //    }
 
-                VideoAuthor = _author;
-            }
-            var videoObject = new VideoListViewModel
-            {
-                AllVideos = videos,
-                VideoAuthor = VideoAuthor
+            //    VideoAuthor = _author;
+            //}
+            //var video= new VideoListViewModel
+            //{
+            //    AllVideos = videos,
+            //    VideoAuthor = VideoAuthor
 
-            };
+            //};
+
 
             ViewBag.Title = "Videos";
 
-            return View(videoObject);
+            return View(await _content.Video.ToListAsync());
         }
 
         [NoDirectAccess]

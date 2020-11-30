@@ -1,8 +1,10 @@
-﻿<h1>All Videos</h1>
-<h2>@Model.VideoAuthor</h2>
+﻿@model IEnumerable<SimpleMovieSearch.Models.Video> 
+
+<h1>All Videos</h1>
+<h2>@Model</h2>
 <div class="row mt-5 mb-2">
     @{
-        foreach (Video video in Model.AllVideos)
+        foreach (Video video in Model)
         {
             @Html.Partial("_AllVideo", video)
         }

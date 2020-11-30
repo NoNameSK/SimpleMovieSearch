@@ -5,12 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using SimpleMovieSearch.Data;
-using SimpleMovieSearch.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using SimpleMovieSearch.Services.Repository;
 using SimpleMovieSearch.Models;
 
 namespace SimpleMovieSearch
@@ -28,8 +25,6 @@ namespace SimpleMovieSearch
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDBContent>(options => options.UseSqlServer(_confsting.GetConnectionString("DefaultConnection")));
-            services.AddTransient<IAllVideo, VideoRepository>();
-            services.AddTransient<IVideoAuthor, AuthorRepository>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
