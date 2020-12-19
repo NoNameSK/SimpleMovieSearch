@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleMovieSearch.Data;
 using SimpleMovieSearch.Models;
-using SimpleMovieSearch.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static SimpleMovieSearch.Helper;
+using SimpleMovieSearch.ViewModels;
 
 namespace SimpleMovieSearch.Controllers
 {
@@ -16,9 +13,8 @@ namespace SimpleMovieSearch.Controllers
 
         private readonly AppDBContent _content;
 
-        public VideosController( AppDBContent content)
+        public VideosController(AppDBContent content)
         {
-
             _content = content;
         }
 
@@ -26,62 +22,33 @@ namespace SimpleMovieSearch.Controllers
         [Route("Videos/List/{category}")]
         public async Task<IActionResult> List()
         {
-            //string _author = author;
-            //IEnumerable<Video> videos = null;
-            //string VideoAuthor = "";
-            //if (string.IsNullOrEmpty(author))
-            //{
-            //    videos = _allVideos.Videos.OrderBy(i => i.Id);
-            //}
-            //else
-            //{
-            //    if (string.Equals("Mikle", author, StringComparison.OrdinalIgnoreCase))
-            //    {
-            //        videos = _allVideos.Videos.Where(i => i.Author.Name.Equals("Майкл")).OrderBy(i => i.Id);
-            //    }
-            //    else if (string.Equals("Gay", author, StringComparison.OrdinalIgnoreCase))
-            //    {
-            //        videos = _allVideos.Videos.Where(i => i.Author.Name.Equals("Гай")).OrderBy(i => i.Id);
-            //    }
-            //    else if (string.Equals("Deny", author, StringComparison.OrdinalIgnoreCase))
-            //    {
-            //        videos = _allVideos.Videos.Where(i => i.Author.Name.Equals("Дени")).OrderBy(i => i.Id);
-            //    }
-
-            //    VideoAuthor = _author;
-            //}
-            //var video= new VideoListViewModel
-            //{
-            //    AllVideos = videos,
-            //    VideoAuthor = VideoAuthor
-
-            //};
-
-
             ViewBag.Title = "Videos";
 
             return View(await _content.Video.ToListAsync());
         }
 
-        [NoDirectAccess]
+        [HttpGet]
         public async Task<IActionResult> AddOrEdit(int id = 0)
         {
+            var authors = _content.Author.ToList();
+            var genres = _content.Genre.ToList();
+
             if (id == 0)
-                return View(new Video());
-            else
+                return View(new VideoListViewModel() { Authors = authors, Genres = genres });
+
+            var video = await _content.Video.Include(p => p.Genres).FirstOrDefaultAsync(x => x.Id == id);
+
+            if (video == null)
             {
-                var video = await _content.Video.FindAsync(id);
-                if (video == null)
-                {
-                    return NotFound();
-                }
-                return View(video);
+                return NotFound();
             }
+            var videoListViewModel = new VideoListViewModel { Video = video, Authors = authors, Genres = genres };
+            return View(videoListViewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddOrEdit(int id, [Bind("Id,Image,Title,ShortDescription,LongDescription,IsFavorites,AuthorId")] Video video)
+        public async Task<IActionResult> AddOrEdit(int id, [Bind("Id,Image,Title,ShortDescription,LongDescription,IsFavorites,AuthorId,GenresId")] Video video)
         {
             if (ModelState.IsValid)
             {
@@ -101,14 +68,84 @@ namespace SimpleMovieSearch.Controllers
                     catch (DbUpdateConcurrencyException)
                     {
                         if (!VideoExists(video.Id))
-                        { return NotFound(); }
+                        {
+                            return NotFound();
+                        }
                         else
-                        { throw; }
+                        {
+                            throw;
+                        }
                     }
                 }
-                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "List", _content.Video.ToList()) });
+                return RedirectToAction("List");
             }
-            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "AddOrEdit", video) });
+            return RedirectToAction("List");
+        }
+
+        //public async Task<IActionResult> AddToFavorite(int? id)
+        //{
+        //    var video = await _content.Video.FindAsync(id);
+        //    return View(video);
+
+        //    //if (ModelState.IsValid)
+        //    //{
+        //    //    _content.User.FirstOrDefault(x => x.Email == User.Identity.Name).FavoriteVideos.Add(video);
+        //    //    await _content.SaveChangesAsync();
+
+        //    //    return RedirectToAction("FavoriteVideos/AllFavoriteVideos");
+        //    //}
+        //    //else
+        ////    //    return RedirectToAction("List");
+        //}
+
+
+
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var video = await _content.Video.FindAsync(id);
+
+            if (video == null)
+                return NotFound();
+
+            return View(video);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var video = await _content.Video.FindAsync(id);
+            _content.Video.Remove(video);
+            _content.SaveChanges();
+
+            return RedirectToAction("List");
+        }
+
+        public async Task<IActionResult> AddToFavorite(int? id)
+        {
+
+            if (id == null)
+                return NotFound();
+
+            var video = await _content.Video.FindAsync(id);
+            return View(video);
+
+            if (video == null)
+                return NotFound();
+        }
+
+        [HttpPost, ActionName("AddToFavorite")]
+        public async Task<IActionResult> AddToFavoriteConfirmed(int id)
+        {
+            var video = await _content.Video.FindAsync(id);
+
+            _content.User.FirstOrDefault(x => x.Email == User.Identity.Name).FavoriteVideos.Add(video);
+            _content.SaveChanges();
+
+            return RedirectToAction("List");
         }
 
         private bool VideoExists(int id)

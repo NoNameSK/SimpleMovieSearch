@@ -22,22 +22,28 @@
                         <a class="nav-link" href="/Videos/List">All video</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Videos/List/Mikle">Mikle</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Videos/List/Gay">Gay</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Videos/List/Deny">Deny</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a>
+                        <a class="nav-link" href="/FavoriteVideos/AllFavoriteVideos">Favorite Videos</a>
                     </li>
                 </ul>
-                <form class="form-inline mt-2 mt-md-0">
-                    <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                </form>
+                <ul class="navbar-nav right">
+                    @{ 
+                        if (User.Identity.IsAuthenticated == false)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Account/Login">Login</a>
+                            </li>
+                            <li class="nav-item right">
+                                <a class="nav-link" href="/Account/Register">Register</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item right">
+                                <a class="nav-link" href="/Account/Logout">Logout</a>
+                            </li>
+                        }
+                     }
+                </ul>
             </div>
         </nav>
     </header>

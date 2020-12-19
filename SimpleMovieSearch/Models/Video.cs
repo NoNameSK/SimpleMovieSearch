@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +16,8 @@ namespace SimpleMovieSearch.Models
         public bool IsFavorites { get; set; }
         public int AuthorId { get; set; }
         public Author Author { get; set; }
-        public List<Genre> Genres { get; set; } 
-        //public List<Communication> Communications { get;}
+        public List<Genre> Genres { get; set; }
+        public List<User> Users { get; set; }
+        //public List<VideoGenres> VideoGenres { get; set; }
     }
 }

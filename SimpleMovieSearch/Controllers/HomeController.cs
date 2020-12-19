@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SimpleMovieSearch.Data;
 using SimpleMovieSearch.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,19 +11,18 @@ namespace SimpleMovieSearch.Controllers
 {
     public class HomeController : Controller
     {
-
-        public HomeController()
+        private readonly AppDBContent _content;
+        public HomeController(AppDBContent content)
         {
-
+            _content = content;
         }
 
-        public ViewResult Index()
+        [Authorize]
+        public IActionResult Index()
         {
-            //var homeVideos = new HomeViewModel
-            //{
-            //    favoriteVideo = _videoRepository.GetFavoriteVideos
-            //};
-            return View(/*homeVideos*/);
+            ViewBag.Title = User.Identity.Name.ToString();
+
+            return View();
         }
     }
 }

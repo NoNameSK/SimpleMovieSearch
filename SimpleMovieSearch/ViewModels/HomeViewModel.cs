@@ -8,6 +8,8 @@ namespace SimpleMovieSearch.ViewModels
 {
     public class HomeViewModel
     {
-        public IEnumerable<Video> favoriteVideo { get; set; }
+        public IEnumerable<Video> Videos { get; set; }
+        public IEnumerable<Genre> Genres { get; set; }
+        public IEnumerable<Author> Authors { get; set; }
     }
 }

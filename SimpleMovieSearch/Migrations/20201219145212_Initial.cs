@@ -2,7 +2,7 @@
 
 namespace SimpleMovieSearch.Migrations
 {
-    public partial class init : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,6 +36,20 @@ namespace SimpleMovieSearch.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Video",
                 columns: table => new
                 {
@@ -60,11 +74,35 @@ namespace SimpleMovieSearch.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserVideo",
+                columns: table => new
+                {
+                    FavoriteVideosId = table.Column<int>(type: "int", nullable: false),
+                    UsersId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserVideo", x => new { x.FavoriteVideosId, x.UsersId });
+                    table.ForeignKey(
+                        name: "FK_UserVideo_User_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserVideo_Video_FavoriteVideosId",
+                        column: x => x.FavoriteVideosId,
+                        principalTable: "Video",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VideoGenres",
                 columns: table => new
                 {
-                    GenresId = table.Column<int>(type: "int", nullable: false),
-                    VideosId = table.Column<int>(type: "int", nullable: false)
+                    VideosId = table.Column<int>(type: "int", nullable: false),
+                    GenresId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -121,17 +159,20 @@ namespace SimpleMovieSearch.Migrations
             migrationBuilder.InsertData(
                 table: "VideoGenres",
                 columns: new[] { "GenresId", "VideosId" },
-                values: new object[] { 1, 1 });
+                values: new object[,]
+                {
+                    { 1, 1 },
+                    { 2, 1 },
+                    { 2, 2 },
+                    { 3, 2 },
+                    { 3, 3 },
+                    { 1, 3 }
+                });
 
-            migrationBuilder.InsertData(
-                table: "VideoGenres",
-                columns: new[] { "GenresId", "VideosId" },
-                values: new object[] { 2, 2 });
-
-            migrationBuilder.InsertData(
-                table: "VideoGenres",
-                columns: new[] { "GenresId", "VideosId" },
-                values: new object[] { 3, 3 });
+            migrationBuilder.CreateIndex(
+                name: "IX_UserVideo_UsersId",
+                table: "UserVideo",
+                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Video_AuthorId",
@@ -147,7 +188,13 @@ namespace SimpleMovieSearch.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "UserVideo");
+
+            migrationBuilder.DropTable(
                 name: "VideoGenres");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Genre");

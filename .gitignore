@@ -163,3 +163,10 @@ SimpleMovieSearch/SimpleMovieSearch.csproj.user
 .vs/SimpleMovieSearch/DesignTimeBuild/.dtbcache.v2
 .vs/SimpleMovieSearch/config/applicationhost.config
 SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/Videos/AddOrEdit.cshtml.g.cs
+SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/Videos/Delete.cshtml.g.cs
+SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/Videos/AddToFavorite.cshtml.g.cs
+SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/Shared/_ValidationScriptsPartial.cshtml.g.cs
+SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/FavoriteVideos/AllFavoriteVideos.cshtml.g.cs
+SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/FavoriteVideos/AddToFavorite.cshtml.g.cs
+SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/Account/Register.cshtml.g.cs
+SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/Account/Login.cshtml.g.cs

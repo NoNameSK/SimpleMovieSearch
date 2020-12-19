@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SimpleMovieSearch.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace SimpleMovieSearch
 {
@@ -30,6 +31,14 @@ namespace SimpleMovieSearch
 
             services.AddSession();
             services.AddMvc(options => options.EnableEndpointRouting = false);
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => //CookieAuthenticationOptions
+                {
+                    options.LoginPath = new PathString("/Account/Login");
+                });
+            services.AddControllersWithViews();
+
             services.AddMemoryCache();
         }
 
@@ -41,6 +50,10 @@ namespace SimpleMovieSearch
             app.UseStatusCodePages();
             app.UseStaticFiles();
             //app.UseMvcWithDefaultRoute();
+
+            app.UseAuthentication();    
+            app.UseAuthorization();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
@@ -48,11 +61,6 @@ namespace SimpleMovieSearch
             });
 
 
-            //using (var scope = app.ApplicationServices.CreateScope())
-            //{
-            //    AppDBContent content = scope.ServiceProvider.GetRequiredService<AppDBContent>();
-            //    DBObjects.Initial(content);
-            //}
         }
     }
 }

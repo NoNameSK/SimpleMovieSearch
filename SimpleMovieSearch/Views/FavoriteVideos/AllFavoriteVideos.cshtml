@@ -1,0 +1,16 @@
+﻿@model SimpleMovieSearch.ViewModels.UserFavoriteViewModel
+
+<div class="row mt-5 mb-2">
+    @{
+        foreach (Video video in Model.FavoriteVideos)
+        {
+        <div class="col-lg-4">
+            <img class="img-thumbnail" src="@video.Image" alt="@video.Title" />
+            <h2>Video: @video.Title</h2>
+            <p>@video.ShortDescription</p>
+            <p><a class="btn btn-warning" href="#">More information</a></p>
+        </div>
+        }
+    }
+</div>
+

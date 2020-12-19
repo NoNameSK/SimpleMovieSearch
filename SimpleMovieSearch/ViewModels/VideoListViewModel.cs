@@ -1,4 +1,5 @@
-﻿using SimpleMovieSearch.Models;
+﻿using SimpleMovieSearch.Data;
+using SimpleMovieSearch.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,8 @@ namespace SimpleMovieSearch.ViewModels
 {
     public class VideoListViewModel
     {
-        public IEnumerable<Video> AllVideos { get; set; }
-        public string VideoAuthor { get; set; }
+        public Video Video { get; set; }
+        public IEnumerable<Author> Authors { get; set; }
+        public IEnumerable<Genre> Genres { get; set; }
     }
 }

@@ -100,6 +100,26 @@ namespace SimpleMovieSearch.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SimpleMovieSearch.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
+                });
+
             modelBuilder.Entity("SimpleMovieSearch.Models.Video", b =>
                 {
                     b.Property<int>("Id")
@@ -164,7 +184,7 @@ namespace SimpleMovieSearch.Migrations
                         });
                 });
 
-            modelBuilder.Entity("VideoGenre", b =>
+            modelBuilder.Entity("SimpleMovieSearch.Models.VideoGenres", b =>
                 {
                     b.Property<int>("GenresId")
                         .HasColumnType("int");
@@ -187,13 +207,43 @@ namespace SimpleMovieSearch.Migrations
                         new
                         {
                             GenresId = 2,
+                            VideosId = 1
+                        },
+                        new
+                        {
+                            GenresId = 2,
+                            VideosId = 2
+                        },
+                        new
+                        {
+                            GenresId = 3,
                             VideosId = 2
                         },
                         new
                         {
                             GenresId = 3,
                             VideosId = 3
+                        },
+                        new
+                        {
+                            GenresId = 1,
+                            VideosId = 3
                         });
+                });
+
+            modelBuilder.Entity("UserVideo", b =>
+                {
+                    b.Property<int>("FavoriteVideosId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FavoriteVideosId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("UserVideo");
                 });
 
             modelBuilder.Entity("SimpleMovieSearch.Models.Video", b =>
@@ -207,17 +257,36 @@ namespace SimpleMovieSearch.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("VideoGenre", b =>
+            modelBuilder.Entity("SimpleMovieSearch.Models.VideoGenres", b =>
                 {
-                    b.HasOne("SimpleMovieSearch.Models.Genre", null)
+                    b.HasOne("SimpleMovieSearch.Models.Genre", "Genres")
                         .WithMany()
                         .HasForeignKey("GenresId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SimpleMovieSearch.Models.Video", null)
+                    b.HasOne("SimpleMovieSearch.Models.Video", "Video")
                         .WithMany()
                         .HasForeignKey("VideosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Genres");
+
+                    b.Navigation("Video");
+                });
+
+            modelBuilder.Entity("UserVideo", b =>
+                {
+                    b.HasOne("SimpleMovieSearch.Models.Video", null)
+                        .WithMany()
+                        .HasForeignKey("FavoriteVideosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SimpleMovieSearch.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
