@@ -26,27 +26,6 @@ namespace SimpleMovieSearch.Data
                 .WithMany(g => g.Videos)
                 .HasForeignKey(s => s.AuthorId);
 
-            //modelBuilder.Entity<Video>()
-            //    .HasMany(x => x.Genres)
-            //    .WithMany(x => x.Videos)
-            //    .UsingEntity<Dictionary<string, object>>(
-            //        "VideoGenre",
-            //        x => x.HasOne<Genre>().WithMany(),
-            //        x => x.HasOne<Video>().WithMany());
-
-            //modelBuilder.Entity<VideoGenres>().HasKey(sc => new { sc.VideosId, sc.GenresId });
-
-            //modelBuilder.Entity<VideoGenres>()
-            //    .HasOne<Video>(sc => sc.Video)
-            //    .WithMany(s => s.VideoGenres)
-            //    .HasForeignKey(sc => sc.VideosId);
-
-
-            //modelBuilder.Entity<VideoGenres>()
-            //    .HasOne<Genre>(sc => sc.Genres)
-            //    .WithMany(s => s.VideoGenres)
-            //    .HasForeignKey(sc => sc.GenresId);
-
             modelBuilder
                 .Entity<Video>()
                 .HasMany(e => e.Genres)
@@ -54,8 +33,6 @@ namespace SimpleMovieSearch.Data
                 .UsingEntity<VideoGenres>(
                     b => b.HasOne(e => e.Genres).WithMany().HasForeignKey(e => e.GenresId),
                     b => b.HasOne(e => e.Video).WithMany().HasForeignKey(e => e.VideosId));
-
-            //modelBuilder.Entity<VideoGenres>().HasKey(sc => new { sc.VideosId, sc.GenresId });
 
             var authors = new Author []
             {
@@ -83,19 +60,6 @@ namespace SimpleMovieSearch.Data
                 new VideoGenres { VideosId = 3, GenresId = 1}
             });
                 
-
-            //modelBuilder.Entity<VideoGenres>().HasData(
-            //    new VideoGenres { VideosId = 1, GenresId = 1 },
-            //    new VideoGenres { VideosId = 2, GenresId = 2 },
-            //    new VideoGenres { VideosId = 3, GenresId = 3 }
-            //    );
-
-            //modelBuilder.Entity<Genre>().HasData(
-            //    new Genre { Id = 1, Name = "Фантастика" },
-            //    new Genre { Id = 2, Name = "Комедия" },
-            //    new Genre { Id = 3, Name = "Криминальная комедия" }
-            //    );
-
             modelBuilder.Entity<Video>()
                 .HasData(
                 new Video
@@ -129,20 +93,6 @@ namespace SimpleMovieSearch.Data
                     AuthorId = 3,
                 }
                 ) ;
-
-            //modelBuilder.Entity<VideoGenres>()
-            //    .HasData(
-            //    new VideoGenres { GenresId = 1, VideosId = 1 },
-            //    new VideoGenres { GenresId = 2, VideosId = 2 },
-            //    new VideoGenres { GenresId = 3, VideosId = 3 }
-            //    );
-
-            //modelBuilder.SharedTypeEntity<Dictionary<string, object>>("VideoGenre").HasData(
-            //new { VideosId = 1, GenresId = 1 },
-            //new { VideosId = 2, GenresId = 2 },
-            //new { VideosId = 3, GenresId = 3 }
-            //);
-            //modelBuilder.SharedTypeEntity<Dictionary<string, object>>("VideoGenre").ToTable("VideoGenres");
         }
         }
 }

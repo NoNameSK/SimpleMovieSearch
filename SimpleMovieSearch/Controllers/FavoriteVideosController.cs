@@ -20,14 +20,14 @@ namespace SimpleMovieSearch.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AllFavoriteVideos()
+        public IActionResult AllFavoriteVideos()
         {
             if (User.Identity.IsAuthenticated == true)
             {
                 var user = _content.User.FirstOrDefault(x => x.Email == User.Identity.Name);
-                var videos = _content.User.Include(x => x.FavoriteVideos).FirstOrDefault(x => x.Email == User.Identity.Name).FavoriteVideos.ToList();
+                var favoriteVideos = _content.User.Include(x => x.FavoriteVideos).FirstOrDefault(x => x.Email == User.Identity.Name).FavoriteVideos.ToList();
 
-                var userFavoriteViewModel = new UserFavoriteViewModel { User = user, FavoriteVideos = videos };
+                var userFavoriteViewModel = new UserFavoriteViewModel { User = user, FavoriteVideos = favoriteVideos };
 
                 return View(userFavoriteViewModel);
             }

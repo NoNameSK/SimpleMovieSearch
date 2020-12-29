@@ -1,5 +1,4 @@
-﻿@model SimpleMovieSearch.ViewModels.VideoListViewModel
-
+﻿@model SimpleMovieSearch.ViewModels.CreateVideoViewModel
 
 <form action="" method="post">
     <div>
@@ -23,7 +22,7 @@
                     <option value="@author.Id">@author.Name</option>
                 }
             </select>
-            <select multiple name="GenreId">
+            <select multiple="multiple" name="GenreIds">
                 <option disabled>Choose Genre</option>
                 @foreach (Genre genre in Model.Genres)
                 {
@@ -46,11 +45,11 @@
             <label>IsFavorites</label>
             @if (Model.Video.IsFavorites == true)
             {
-                <input type="checkbox" name="IsFavorites" checked="checked" value="@Model.Video.IsFavorites" />
+                <input type="checkbox" name="IsFavorites" checked="checked" value="true" />
             }
             else
             {
-                <input type="checkbox" name="IsFavorites" value="@Model.Video.IsFavorites" />   
+                <input type="checkbox" name="IsFavorites" value="true" />
             }
             <label>Author</label>
             <select name="AuthorId">
@@ -65,18 +64,20 @@
                     {
                         <option value="@author.Id">@author.Name</option>
                     }
-
                 }
             </select>
-            <select multiple="multiple" name="GenresId">
+            <select multiple="multiple" name="GenreIds">
                 <option disabled>Choose Genre</option>
                 @foreach (Genre genre in Model.Genres)
                 {
-                    //foreach (var itmem in Model.Genres) {
-                    //    if (Model.Video.GanresId[itmem] == genre.Id) { }
-                    <option value="@genre.Id">@genre.Name</option>
-
-                    @*}*@
+                        if (Model.Video.Genres.Contains(genre))
+                        {
+                            <option value="@genre.Id" selected="@Model.Video.Genres.Find(x => x.Id == genre.Id).Id">@genre.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@genre.Id">@genre.Name</option>
+                        }
                 }
             </select>
             <button type="submit">Save</button>
