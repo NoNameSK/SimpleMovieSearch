@@ -11,7 +11,7 @@ namespace SimpleMovieSearch.ViewModels
         public Video Video { get; set; }
         public IEnumerable<Genre> Genres { get; set; }
         public IEnumerable<Author> Authors { get; set; }
-        public List<VideoGenres> VideoGenres { get; set; }
+        //public List<VideoGenres> VideoGenres { get; set; }
         public int[] GenreIds { get; set; }
     }
 }

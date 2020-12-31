@@ -2,7 +2,7 @@
 
 namespace SimpleMovieSearch.Migrations
 {
-    public partial class Initial : Migration
+    public partial class NewInitial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -74,6 +74,30 @@ namespace SimpleMovieSearch.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CommunicationsVideoGenres",
+                columns: table => new
+                {
+                    GenreId = table.Column<int>(type: "int", nullable: false),
+                    VideoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CommunicationsVideoGenres", x => new { x.GenreId, x.VideoId });
+                    table.ForeignKey(
+                        name: "FK_CommunicationsVideoGenres_Genre_GenreId",
+                        column: x => x.GenreId,
+                        principalTable: "Genre",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CommunicationsVideoGenres_Video_VideoId",
+                        column: x => x.VideoId,
+                        principalTable: "Video",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserVideo",
                 columns: table => new
                 {
@@ -97,38 +121,14 @@ namespace SimpleMovieSearch.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "VideoGenres",
-                columns: table => new
-                {
-                    VideosId = table.Column<int>(type: "int", nullable: false),
-                    GenresId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_VideoGenres", x => new { x.GenresId, x.VideosId });
-                    table.ForeignKey(
-                        name: "FK_VideoGenres_Genre_GenresId",
-                        column: x => x.GenresId,
-                        principalTable: "Genre",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_VideoGenres_Video_VideosId",
-                        column: x => x.VideosId,
-                        principalTable: "Video",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.InsertData(
                 table: "Author",
                 columns: new[] { "Id", "Age", "Description", "Name", "Surname" },
                 values: new object[,]
                 {
                     { 1, 55, "американский кинорежиссёр и кинопродюсер. Один из самых кассовых режиссёров планеты — его картины собрали в прокате более 5,7 млрд долларов США.", "Майкл", "Бенджамин Бэй" },
-                    { 2, 52, "британский кинорежиссёр, сценарист, продюсер, чаще всего работающий в жанре криминальной комедии", "Гай", "Стюарт Ри́чи" },
-                    { 3, 53, "франко-канадский кинорежиссёр и сценарист.", "Дени", "Вильнёв" }
+                    { 3, 53, "франко-канадский кинорежиссёр и сценарист.", "Дени", "Вильнёв" },
+                    { 2, 52, "британский кинорежиссёр, сценарист, продюсер, чаще всего работающий в жанре криминальной комедии", "Гай", "Стюарт Ри́чи" }
                 });
 
             migrationBuilder.InsertData(
@@ -149,25 +149,30 @@ namespace SimpleMovieSearch.Migrations
             migrationBuilder.InsertData(
                 table: "Video",
                 columns: new[] { "Id", "AuthorId", "Image", "IsFavorites", "LongDescription", "ShortDescription", "Title" },
-                values: new object[] { 2, 2, "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/637271d5-61b4-4e46-ac83-6d07494c7645/600x900", true, "Талантливый выпускник Оксфорда, применив свой уникальный ум и невиданную дерзость, придумал нелегальную схему обогащения с использованием поместья обедневшей английской аристократии. Однако когда он решает продать свой бизнес влиятельному клану миллиардеров из США, на его пути встают не менее обаятельные, но жесткие джентльмены. Намечается обмен любезностями, который точно не обойдется без перестрелок и парочки несчастных случаев.", "Криминальная комедия режиссёра Гая Ричи по собственному сценарию.", "Джентельмены" });
+                values: new object[] { 3, 3, "https://www.film.ru/sites/default/files/movies/posters/37865107-1142009.jpg", false, "Инсценировав собственную смерть, сознательный миллиардер начинает новую жизнь — набирает отряд наёмников из разных стран, чтобы бороться со злом в этом мире. Все члены команды получают вместо имён цифры, и их целью становится свержение диктатора и освобождение народа страны Тургистан.", "«Призрачная шестерка» или «Шестеро вне закона» об этом тоже. О красоте разрушения во всех ее проявлениях.", "Шестеро вне закона" });
 
             migrationBuilder.InsertData(
                 table: "Video",
                 columns: new[] { "Id", "AuthorId", "Image", "IsFavorites", "LongDescription", "ShortDescription", "Title" },
-                values: new object[] { 3, 3, "https://www.film.ru/sites/default/files/movies/posters/37865107-1142009.jpg", false, "Инсценировав собственную смерть, сознательный миллиардер начинает новую жизнь — набирает отряд наёмников из разных стран, чтобы бороться со злом в этом мире. Все члены команды получают вместо имён цифры, и их целью становится свержение диктатора и освобождение народа страны Тургистан.", "«Призрачная шестерка» или «Шестеро вне закона» об этом тоже. О красоте разрушения во всех ее проявлениях.", "Шестеро вне закона" });
+                values: new object[] { 2, 2, "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/637271d5-61b4-4e46-ac83-6d07494c7645/600x900", true, "Талантливый выпускник Оксфорда, применив свой уникальный ум и невиданную дерзость, придумал нелегальную схему обогащения с использованием поместья обедневшей английской аристократии. Однако когда он решает продать свой бизнес влиятельному клану миллиардеров из США, на его пути встают не менее обаятельные, но жесткие джентльмены. Намечается обмен любезностями, который точно не обойдется без перестрелок и парочки несчастных случаев.", "Криминальная комедия режиссёра Гая Ричи по собственному сценарию.", "Джентельмены" });
 
             migrationBuilder.InsertData(
-                table: "VideoGenres",
-                columns: new[] { "GenresId", "VideosId" },
+                table: "CommunicationsVideoGenres",
+                columns: new[] { "GenreId", "VideoId" },
                 values: new object[,]
                 {
                     { 1, 1 },
                     { 2, 1 },
-                    { 2, 2 },
-                    { 3, 2 },
                     { 3, 3 },
-                    { 1, 3 }
+                    { 1, 3 },
+                    { 2, 2 },
+                    { 3, 2 }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CommunicationsVideoGenres_VideoId",
+                table: "CommunicationsVideoGenres",
+                column: "VideoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserVideo_UsersId",
@@ -178,26 +183,21 @@ namespace SimpleMovieSearch.Migrations
                 name: "IX_Video_AuthorId",
                 table: "Video",
                 column: "AuthorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_VideoGenres_VideosId",
-                table: "VideoGenres",
-                column: "VideosId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "CommunicationsVideoGenres");
+
+            migrationBuilder.DropTable(
                 name: "UserVideo");
 
             migrationBuilder.DropTable(
-                name: "VideoGenres");
+                name: "Genre");
 
             migrationBuilder.DropTable(
                 name: "User");
-
-            migrationBuilder.DropTable(
-                name: "Genre");
 
             migrationBuilder.DropTable(
                 name: "Video");

@@ -27,16 +27,17 @@ namespace SimpleMovieSearch.Controllers
         {
             ViewBag.Title = "Videos";
 
-            var videoIds = await _content.VideoGenres
-                .Where(x => genresId.Contains(x.GenresId)) 
-                .Select(x => x.VideosId)
+            IQueryable<Video> videos = _content.Video.Include(p => p.Author).Include(x => x.Genres);
+
+            var genreIds = await videos.SelectMany(x => x.Genres)
+                .Where(x => genresId.Contains(x.Id))
+                .Select(x => x.Id)
                 .Distinct()
                 .ToListAsync();
 
             var authors = await _content.Author.ToListAsync();
             var genres = await _content.Genre.ToListAsync();
 
-            IQueryable <Video> videos = _content.Video.Include(p => p.Author).Include(x => x.Genres);
             if ((authorId != null && authorId != 0) || (genresId != null && genresId.Length != 0))
             {
                 if (authorId != null && authorId != 0)
@@ -45,12 +46,12 @@ namespace SimpleMovieSearch.Controllers
 
                 else if (genresId != null && genresId.Length != 0)
                     videos = videos
-                    .Where(x => videoIds.Contains(x.Id));
+                    .Where(x => genreIds.Contains(x.Id));
 
-                else 
+                else
                     videos = videos
                         .Where(x => x.AuthorId == authorId)
-                        .Where(x => videoIds.Contains(x.Id));
+                        .Where(x => genreIds.Contains(x.Id));
             }
 
             genres.Insert(0, new Genre { Name = "Все", Id = 0 });
@@ -88,7 +89,6 @@ namespace SimpleMovieSearch.Controllers
                 Video = video,
                 Authors = authors,
                 Genres = genres,
-                VideoGenres = _content.VideoGenres.ToList()
             };
 
             return View(CreateVideoViewModel);
@@ -102,39 +102,30 @@ namespace SimpleMovieSearch.Controllers
             {
                 if (id == 0)
                 {
-                    _content.Add(video);
-                    await _content.SaveChangesAsync();
-
-                    foreach (var ids in genreIds)
+                    foreach (var genreId in genreIds)
                     {
-                        var videoGenres = new VideoGenres { VideosId = _content.Video.OrderBy(x => x.Id).Last().Id };
-
-                        videoGenres.GenresId = ids;
-                        _content.VideoGenres.Add(videoGenres);
+                        var addGenre = await _content.Genre.FindAsync(genreId);
+                        video.Genres.Add(addGenre);
                     }
 
-                    _content.SaveChanges();
+                    _content.Add(video);
+                    await _content.SaveChangesAsync();
                 }
                 else
                 {
                     try
                     {
-                        _content.Update(video);
-                        await _content.SaveChangesAsync();
+                        _content.UpdateRange(video);
 
-                        var videoGenresForRemovie = _content.VideoGenres.ToList().FindAll(x => x.VideosId == video.Id);
+                        _content.Video.Include(x => x.Genres).FirstOrDefault(g => g.Id == video.Id).Genres.Clear();
 
-                        _content.VideoGenres.RemoveRange(videoGenresForRemovie);
-                        _content.SaveChanges();
-
-                        foreach (var ids in genreIds)
+                        foreach (var genreId in genreIds)
                         {
-                            var videoGenres = new VideoGenres { VideosId = video.Id };
-
-                            videoGenres.GenresId = ids;
-                            _content.VideoGenres.Add(videoGenres);
+                            var addGenre = await _content.Genre.FindAsync(genreId);
+                            video.Genres.Add(addGenre);
                         }
-                        _content.SaveChanges();
+
+                        await _content.SaveChangesAsync();
                     }
                     catch (DbUpdateConcurrencyException)
                     {
@@ -173,9 +164,6 @@ namespace SimpleMovieSearch.Controllers
 
             _content.Video.Remove(video);
 
-            var videoGenresForRemovie = _content.VideoGenres.ToList().FindAll(x => x.VideosId == video.Id);
-
-            _content.VideoGenres.RemoveRange(videoGenresForRemovie);
             _content.SaveChanges();
 
             return RedirectToAction("List");

@@ -9,8 +9,8 @@ using SimpleMovieSearch.Data;
 namespace SimpleMovieSearch.Migrations
 {
     [DbContext(typeof(AppDBContent))]
-    [Migration("20201219145212_Initial")]
-    partial class Initial
+    [Migration("20201230081144_NewInitial")]
+    partial class NewInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,6 +19,53 @@ namespace SimpleMovieSearch.Migrations
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.0");
+
+            modelBuilder.Entity("CommunicationsVideoGenres", b =>
+                {
+                    b.Property<int>("GenreId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VideoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GenreId", "VideoId");
+
+                    b.HasIndex("VideoId");
+
+                    b.ToTable("CommunicationsVideoGenres");
+
+                    b.HasData(
+                        new
+                        {
+                            GenreId = 1,
+                            VideoId = 1
+                        },
+                        new
+                        {
+                            GenreId = 2,
+                            VideoId = 1
+                        },
+                        new
+                        {
+                            GenreId = 2,
+                            VideoId = 2
+                        },
+                        new
+                        {
+                            GenreId = 3,
+                            VideoId = 2
+                        },
+                        new
+                        {
+                            GenreId = 3,
+                            VideoId = 3
+                        },
+                        new
+                        {
+                            GenreId = 1,
+                            VideoId = 3
+                        });
+                });
 
             modelBuilder.Entity("SimpleMovieSearch.Models.Author", b =>
                 {
@@ -54,19 +101,19 @@ namespace SimpleMovieSearch.Migrations
                         },
                         new
                         {
-                            Id = 2,
-                            Age = 52,
-                            Description = "британский кинорежиссёр, сценарист, продюсер, чаще всего работающий в жанре криминальной комедии",
-                            Name = "Гай",
-                            Surname = "Стюарт Ри́чи"
-                        },
-                        new
-                        {
                             Id = 3,
                             Age = 53,
                             Description = "франко-канадский кинорежиссёр и сценарист.",
                             Name = "Дени",
                             Surname = "Вильнёв"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Age = 52,
+                            Description = "британский кинорежиссёр, сценарист, продюсер, чаще всего работающий в жанре криминальной комедии",
+                            Name = "Гай",
+                            Surname = "Стюарт Ри́чи"
                         });
                 });
 
@@ -186,53 +233,6 @@ namespace SimpleMovieSearch.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SimpleMovieSearch.Models.VideoGenres", b =>
-                {
-                    b.Property<int>("GenresId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VideosId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GenresId", "VideosId");
-
-                    b.HasIndex("VideosId");
-
-                    b.ToTable("VideoGenres");
-
-                    b.HasData(
-                        new
-                        {
-                            GenresId = 1,
-                            VideosId = 1
-                        },
-                        new
-                        {
-                            GenresId = 2,
-                            VideosId = 1
-                        },
-                        new
-                        {
-                            GenresId = 2,
-                            VideosId = 2
-                        },
-                        new
-                        {
-                            GenresId = 3,
-                            VideosId = 2
-                        },
-                        new
-                        {
-                            GenresId = 3,
-                            VideosId = 3
-                        },
-                        new
-                        {
-                            GenresId = 1,
-                            VideosId = 3
-                        });
-                });
-
             modelBuilder.Entity("UserVideo", b =>
                 {
                     b.Property<int>("FavoriteVideosId")
@@ -248,6 +248,21 @@ namespace SimpleMovieSearch.Migrations
                     b.ToTable("UserVideo");
                 });
 
+            modelBuilder.Entity("CommunicationsVideoGenres", b =>
+                {
+                    b.HasOne("SimpleMovieSearch.Models.Genre", null)
+                        .WithMany()
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SimpleMovieSearch.Models.Video", null)
+                        .WithMany()
+                        .HasForeignKey("VideoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SimpleMovieSearch.Models.Video", b =>
                 {
                     b.HasOne("SimpleMovieSearch.Models.Author", "Author")
@@ -257,25 +272,6 @@ namespace SimpleMovieSearch.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
-                });
-
-            modelBuilder.Entity("SimpleMovieSearch.Models.VideoGenres", b =>
-                {
-                    b.HasOne("SimpleMovieSearch.Models.Genre", "Genres")
-                        .WithMany()
-                        .HasForeignKey("GenresId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SimpleMovieSearch.Models.Video", "Video")
-                        .WithMany()
-                        .HasForeignKey("VideosId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Genres");
-
-                    b.Navigation("Video");
                 });
 
             modelBuilder.Entity("UserVideo", b =>

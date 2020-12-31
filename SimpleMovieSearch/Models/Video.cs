@@ -16,7 +16,7 @@ namespace SimpleMovieSearch.Models
         public bool IsFavorites { get; set; }
         public int AuthorId { get; set; }
         public Author Author { get; set; }
-        public List<Genre> Genres { get; set; } 
+        public List<Genre> Genres { get; set; } = new List<Genre>();
         public List<User> Users { get; set; }
     }
 }
