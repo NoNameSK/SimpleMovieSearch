@@ -14,9 +14,9 @@ namespace SimpleMovieSearch.Controllers
     public class VideosController : Controller
     {
 
-        private readonly AppDBContent _content;
+        private readonly Data.AppContext _content;
 
-        public VideosController(AppDBContent content)
+        public VideosController(Data.AppContext content)
         {
             _content = content;
         }

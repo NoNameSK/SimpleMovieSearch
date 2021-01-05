@@ -7,7 +7,7 @@ using SimpleMovieSearch.Data;
 
 namespace SimpleMovieSearch.Migrations
 {
-    [DbContext(typeof(AppDBContent))]
+    [DbContext(typeof(AppContext))]
     partial class AppDBContentModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

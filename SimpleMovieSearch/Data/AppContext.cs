@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SimpleMovieSearch.Data
 {
-    public class AppDBContent : DbContext
+    public class AppContext : DbContext
     {
-        public AppDBContent(DbContextOptions<AppDBContent> options) : base(options)
+        public AppContext(DbContextOptions<AppContext> options) : base(options)
         {
         }
 
@@ -17,7 +17,6 @@ namespace SimpleMovieSearch.Data
         public DbSet<Author> Author { get; set; }
         public DbSet<Genre> Genre { get; set; }
         public DbSet<User> User { get; set; }
-        //public DbSet<VideoGenres> VideoGenres { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionbuilder)
         {
