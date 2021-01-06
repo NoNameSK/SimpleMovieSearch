@@ -24,10 +24,11 @@ namespace SimpleMovieSearch.Controllers
         {
             if (User.Identity.IsAuthenticated == true)
             {
-                var user = _content.User.FirstOrDefault(x => x.Email == User.Identity.Name);
-                var favoriteVideos = _content.User.Include(x => x.FavoriteVideos).FirstOrDefault(x => x.Email == User.Identity.Name).FavoriteVideos.ToList();
-
-                var userFavoriteViewModel = new UserFavoriteViewModel { User = user, FavoriteVideos = favoriteVideos };
+                var userFavoriteViewModel = new UserFavoriteViewModel 
+                {
+                    User = _content.User.FirstOrDefault(x => x.Email == User.Identity.Name), 
+                    FavoriteVideos = _content.User.Include(x => x.FavoriteVideos).FirstOrDefault(x => x.Email == User.Identity.Name).FavoriteVideos.ToList() 
+                };
 
                 return View(userFavoriteViewModel);
             }

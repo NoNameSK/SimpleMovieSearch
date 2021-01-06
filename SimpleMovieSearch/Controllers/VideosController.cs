@@ -27,16 +27,15 @@ namespace SimpleMovieSearch.Controllers
         {
             ViewBag.Title = "Videos";
 
+            var authors = await _content.Author.ToListAsync();
+            var genres = await _content.Genre.ToListAsync();
             IQueryable<Video> videos = _content.Video.Include(p => p.Author).Include(x => x.Genres);
 
-            var genreIds =  videos.SelectMany(x => x.Genres)
+            var genreIds = await videos.SelectMany(x => x.Genres)
                 .Where(x => genresId.Contains(x.Id))
                 .Select(x => x.Id)
                 .Distinct()
-                .ToList();
-
-            var authors = await _content.Author.ToListAsync();
-            var genres = await _content.Genre.ToListAsync();
+                .ToListAsync();
 
             if (authorId != null && authorId != 0)
                  videos.Where(p => p.AuthorId == authorId);
@@ -48,7 +47,6 @@ namespace SimpleMovieSearch.Controllers
                  videos.Where(x => x.AuthorId == authorId).Where(x => genreIds.Contains(x.Id));
 
             genres.Insert(0, new Genre { Name = "Все", Id = 0 });
-
             authors.Insert(0, new Author { Name = "Все", Id = 0 });
 
             var videoListViewModel = new VideoListViewModel
@@ -65,23 +63,19 @@ namespace SimpleMovieSearch.Controllers
         [HttpGet]
         public async Task<IActionResult> AddOrEdit(int id = 0)
         {
-            var authors = _content.Author.ToList();
-            var genres = _content.Genre.Include(x => x.Videos).ToList();
-
             if (id == 0)
-                return View(new CreateVideoViewModel() { Authors = authors, Genres = genres });
+                return View(new CreateVideoViewModel() { Authors = await _content.Author.ToListAsync(), Genres = await _content.Genre.ToListAsync() });
 
-            var video = await _content.Video.Include(p => p.Genres).FirstOrDefaultAsync(x => x.Id == id);
-
-            if (video == null)
+            if (_content.Video.Include(p => p.Genres).FirstOrDefaultAsync(x => x.Id == id) == null)
             {
                 return NotFound();
             }
+
             var CreateVideoViewModel = new CreateVideoViewModel
             {
-                Video = video,
-                Authors = authors,
-                Genres = genres,
+                Video = await _content.Video.Include(p => p.Genres).FirstOrDefaultAsync(x => x.Id == id),
+                Authors = await _content.Author.ToListAsync(),
+                Genres = await _content.Genre.ToListAsync(),
             };
 
             return View(CreateVideoViewModel);
