@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SimpleMovieSearch.Data
 {
-    public class AppContext : DbContext
+    public class AppDBContext : DbContext
     {
-        public AppContext(DbContextOptions<AppContext> options) : base(options)
+        public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
         {
         }
 
@@ -94,6 +94,7 @@ namespace SimpleMovieSearch.Data
 
             modelBuilder.Entity<Video>()
                 .HasData(dune, jentelmens, sixInstage);
+
         }
         }
 }

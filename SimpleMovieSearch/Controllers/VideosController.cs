@@ -14,9 +14,9 @@ namespace SimpleMovieSearch.Controllers
     public class VideosController : Controller
     {
 
-        private readonly Data.AppContext _content;
+        private readonly AppDBContext _content;
 
-        public VideosController(Data.AppContext content)
+        public VideosController(AppDBContext content)
         {
             _content = content;
         }
@@ -29,30 +29,23 @@ namespace SimpleMovieSearch.Controllers
 
             IQueryable<Video> videos = _content.Video.Include(p => p.Author).Include(x => x.Genres);
 
-            var genreIds = await videos.SelectMany(x => x.Genres)
+            var genreIds =  videos.SelectMany(x => x.Genres)
                 .Where(x => genresId.Contains(x.Id))
                 .Select(x => x.Id)
                 .Distinct()
-                .ToListAsync();
+                .ToList();
 
             var authors = await _content.Author.ToListAsync();
             var genres = await _content.Genre.ToListAsync();
 
-            if ((authorId != null && authorId != 0) || (genresId != null && genresId.Length != 0))
-            {
-                if (authorId != null && authorId != 0)
-                    videos = videos
-                        .Where(p => p.AuthorId == authorId);
+            if (authorId != null && authorId != 0)
+                 videos.Where(p => p.AuthorId == authorId);
 
-                else if (genresId != null && genresId.Length != 0)
-                    videos = videos
-                    .Where(x => genreIds.Contains(x.Id));
+            if (genresId != null && genresId.Length != 0)
+                 videos.Where(x => genreIds.Contains(x.Id));
 
-                else
-                    videos = videos
-                        .Where(x => x.AuthorId == authorId)
-                        .Where(x => genreIds.Contains(x.Id));
-            }
+            if ((authorId != null && authorId != 0) && (genresId != null && genresId.Length != 0))
+                 videos.Where(x => x.AuthorId == authorId).Where(x => genreIds.Contains(x.Id));
 
             genres.Insert(0, new Genre { Name = "Все", Id = 0 });
 

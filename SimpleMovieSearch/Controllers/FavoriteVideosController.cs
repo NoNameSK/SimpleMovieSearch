@@ -12,9 +12,9 @@ namespace SimpleMovieSearch.Controllers
 {
     public class FavoriteVideosController : Controller
     {
-        private readonly Data.AppContext _content;
+        private readonly Data.AppDBContext _content;
 
-        public FavoriteVideosController(Data.AppContext content)
+        public FavoriteVideosController(Data.AppDBContext content)
         {
             _content = content;
         }

@@ -15,9 +15,9 @@ namespace SimpleMovieSearch.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly Data.AppContext _content;
+        private readonly Data.AppDBContext _content;
 
-        public AccountController(Data.AppContext appDBContent)
+        public AccountController(Data.AppDBContext appDBContent)
         {
             _content = appDBContent;
         }

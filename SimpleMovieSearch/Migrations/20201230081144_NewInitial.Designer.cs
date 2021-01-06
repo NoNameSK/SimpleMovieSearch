@@ -8,7 +8,7 @@ using SimpleMovieSearch.Data;
 
 namespace SimpleMovieSearch.Migrations
 {
-    [DbContext(typeof(AppContext))]
+    [DbContext(typeof(AppDBContext))]
     [Migration("20201230081144_NewInitial")]
     partial class NewInitial
     {

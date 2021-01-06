@@ -11,8 +11,8 @@ namespace SimpleMovieSearch.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly Data.AppContext _content;
-        public HomeController(Data.AppContext content)
+        private readonly Data.AppDBContext _content;
+        public HomeController(Data.AppDBContext content)
         {
             _content = content;
         }
