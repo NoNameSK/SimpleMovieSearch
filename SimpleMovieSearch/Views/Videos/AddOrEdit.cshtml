@@ -72,7 +72,7 @@
                 {
                         if (Model.Video.Genres.Contains(genre))
                         {
-                            <option value="@genre.Id" selected="@Model.Video.Genres.Find(x => x.Id == genre.Id).Id">@genre.Name</option>
+                            <option value="@genre.Id" selected>@genre.Name</option>
                         }
                         else
                         {

@@ -21,8 +21,7 @@ namespace SimpleMovieSearch
         {
             _confsting = new ConfigurationBuilder().SetBasePath(hostEnv.ContentRootPath).AddJsonFile("dbsettings.json").Build();
         }
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<Data.AppDBContext>(options => options.UseSqlServer(_confsting.GetConnectionString("DefaultConnection")));
@@ -33,7 +32,7 @@ namespace SimpleMovieSearch
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => //CookieAuthenticationOptions
+                .AddCookie(options => 
                 {
                     options.LoginPath = new PathString("/Account/Login");
                 });
@@ -42,7 +41,6 @@ namespace SimpleMovieSearch
             services.AddMemoryCache();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSession();

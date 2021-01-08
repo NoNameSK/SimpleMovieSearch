@@ -12,11 +12,11 @@ namespace SimpleMovieSearch.Controllers
 {
     public class FavoriteVideosController : Controller
     {
-        private readonly Data.AppDBContext _content;
+        private readonly Data.AppDBContext _db;
 
-        public FavoriteVideosController(Data.AppDBContext content)
+        public FavoriteVideosController(Data.AppDBContext сontext)
         {
-            _content = content;
+            _db = сontext;
         }
 
         [HttpGet]
@@ -24,10 +24,12 @@ namespace SimpleMovieSearch.Controllers
         {
             if (User.Identity.IsAuthenticated == true)
             {
+                var user = _db.User.Include(x => x.FavoriteVideos).FirstOrDefault(x => x.Email == User.Identity.Name);
+
                 var userFavoriteViewModel = new UserFavoriteViewModel 
                 {
-                    User = _content.User.FirstOrDefault(x => x.Email == User.Identity.Name), 
-                    FavoriteVideos = _content.User.Include(x => x.FavoriteVideos).FirstOrDefault(x => x.Email == User.Identity.Name).FavoriteVideos.ToList() 
+                    User = user, 
+                    FavoriteVideos = user.FavoriteVideos.ToList() 
                 };
 
                 return View(userFavoriteViewModel);

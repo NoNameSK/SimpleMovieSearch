@@ -11,10 +11,10 @@ namespace SimpleMovieSearch.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly Data.AppDBContext _content;
-        public HomeController(Data.AppDBContext content)
+        private readonly Data.AppDBContext _db;
+        public HomeController(Data.AppDBContext сontext)
         {
-            _content = content;
+            _db = сontext;
         }
 
         [Authorize]

@@ -14,11 +14,11 @@ namespace SimpleMovieSearch.Controllers
     public class VideosController : Controller
     {
 
-        private readonly AppDBContext _content;
+        private readonly AppDBContext _db;
 
-        public VideosController(AppDBContext content)
+        public VideosController(AppDBContext сontext)
         {
-            _content = content;
+            _db = сontext;
         }
 
         [Route("Videos/List")]
@@ -27,9 +27,10 @@ namespace SimpleMovieSearch.Controllers
         {
             ViewBag.Title = "Videos";
 
-            var authors = await _content.Author.ToListAsync();
-            var genres = await _content.Genre.ToListAsync();
-            IQueryable<Video> videos = _content.Video.Include(p => p.Author).Include(x => x.Genres);
+            var authors = await _db.Author.ToListAsync();
+            var genres = await _db.Genre.ToListAsync();
+
+            IQueryable<Video> videos = _db.Video.Include(p => p.Author).Include(x => x.Genres);
 
             var genreIds = await videos.SelectMany(x => x.Genres)
                 .Where(x => genresId.Contains(x.Id))
@@ -37,21 +38,24 @@ namespace SimpleMovieSearch.Controllers
                 .Distinct()
                 .ToListAsync();
 
-            if (authorId != null && authorId != 0)
-                 videos.Where(p => p.AuthorId == authorId);
+            if ((authorId != null && authorId != 0) || (genresId != null && genresId.Length != 0))
+            {
+                if (authorId != null && authorId != 0)
+                    videos = videos.Where(p => p.AuthorId == authorId);
 
-            if (genresId != null && genresId.Length != 0)
-                 videos.Where(x => genreIds.Contains(x.Id));
+                if (genresId != null && genresId.Length != 0)
+                    videos = videos.Where(p => genreIds.Contains(p.Id));
 
-            if ((authorId != null && authorId != 0) && (genresId != null && genresId.Length != 0))
-                 videos.Where(x => x.AuthorId == authorId).Where(x => genreIds.Contains(x.Id));
+                if ((authorId != null && authorId != 0) && (genresId != null && genresId.Length != 0))
+                    videos = videos.Where(x => x.AuthorId == authorId).Where(p => genreIds.Contains(p.Id));
+            }
 
             genres.Insert(0, new Genre { Name = "Все", Id = 0 });
             authors.Insert(0, new Author { Name = "Все", Id = 0 });
 
             var videoListViewModel = new VideoListViewModel
             {
-                Videos = videos.ToList(),
+                Videos = videos,
                 Authors = new SelectList(authors, "Id", "Name"),
                 AuthorName = authorName,
                 Genres = new SelectList(genres, "Id", "Name")
@@ -63,19 +67,23 @@ namespace SimpleMovieSearch.Controllers
         [HttpGet]
         public async Task<IActionResult> AddOrEdit(int id = 0)
         {
-            if (id == 0)
-                return View(new CreateVideoViewModel() { Authors = await _content.Author.ToListAsync(), Genres = await _content.Genre.ToListAsync() });
+            var video = _db.Video.Include(p => p.Genres).Include(c => c.Author).FirstOrDefault(x => x.Id == id);
+            var authors = await _db.Author.ToListAsync();
+            var genres = await _db.Genre.ToListAsync();
 
-            if (_content.Video.Include(p => p.Genres).FirstOrDefaultAsync(x => x.Id == id) == null)
+            if (id == 0)
+                return View(new CreateVideoViewModel() { Authors = authors, Genres = genres });
+
+            if (video == null)
             {
                 return NotFound();
             }
 
             var CreateVideoViewModel = new CreateVideoViewModel
             {
-                Video = await _content.Video.Include(p => p.Genres).FirstOrDefaultAsync(x => x.Id == id),
-                Authors = await _content.Author.ToListAsync(),
-                Genres = await _content.Genre.ToListAsync(),
+                Video = video,
+                Authors = authors,
+                Genres = genres
             };
 
             return View(CreateVideoViewModel);
@@ -91,28 +99,28 @@ namespace SimpleMovieSearch.Controllers
                 {
                     foreach (var genreId in genreIds)
                     {
-                        var addGenre = await _content.Genre.FindAsync(genreId);
+                        var addGenre = await _db.Genre.FindAsync(genreId);
                         video.Genres.Add(addGenre);
                     }
 
-                    _content.Add(video);
-                    await _content.SaveChangesAsync();
+                    _db.Add(video);
+                    await _db.SaveChangesAsync();
                 }
                 else
                 {
                     try
                     {
-                        _content.UpdateRange(video);
+                        _db.UpdateRange(video);
 
-                        _content.Video.Include(x => x.Genres).FirstOrDefault(g => g.Id == video.Id).Genres.Clear();
+                        _db.Video.Include(x => x.Genres).FirstOrDefault(g => g.Id == video.Id).Genres.Clear();
 
                         foreach (var genreId in genreIds)
                         {
-                            var addGenre = await _content.Genre.FindAsync(genreId);
+                            var addGenre = await _db.Genre.FindAsync(genreId);
                             video.Genres.Add(addGenre);
                         }
 
-                        await _content.SaveChangesAsync();
+                        await _db.SaveChangesAsync();
                     }
                     catch (DbUpdateConcurrencyException)
                     {
@@ -136,7 +144,7 @@ namespace SimpleMovieSearch.Controllers
             if (id == null)
                 return NotFound();
 
-            var video = await _content.Video.FindAsync(id);
+            var video = await _db.Video.FindAsync(id);
 
             if (video == null)
                 return NotFound();
@@ -147,11 +155,11 @@ namespace SimpleMovieSearch.Controllers
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var video = await _content.Video.FindAsync(id);
+            var video = await _db.Video.FindAsync(id);
 
-            _content.Video.Remove(video);
+            _db.Video.Remove(video);
 
-            _content.SaveChanges();
+            _db.SaveChanges();
 
             return RedirectToAction("List");
         }
@@ -162,27 +170,25 @@ namespace SimpleMovieSearch.Controllers
             if (id == null)
                 return NotFound();
 
-            var video = await _content.Video.FindAsync(id);
-            return View(video);
+            var video = await _db.Video.FindAsync(id);
 
-            if (video == null)
-                return NotFound();
+            return View(video);
         }
 
         [HttpPost, ActionName("AddToFavorite")]
         public async Task<IActionResult> AddToFavoriteConfirmed(int id)
         {
-            var video = await _content.Video.FindAsync(id);
+            var video = await _db.Video.FindAsync(id);
 
-            _content.User.FirstOrDefault(x => x.Email == User.Identity.Name).FavoriteVideos.Add(video);
-            _content.SaveChanges();
+            _db.User.FirstOrDefault(x => x.Email == User.Identity.Name).FavoriteVideos.Add(video);
+            _db.SaveChanges();
 
             return RedirectToAction("List");
         }
 
         private bool VideoExists(int id)
         {
-            return _content.Video.Any(e => e.Id == id);
+            return _db.Video.Any(e => e.Id == id);
         }
     }
 }

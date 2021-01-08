@@ -15,11 +15,11 @@ namespace SimpleMovieSearch.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly Data.AppDBContext _content;
+        private readonly Data.AppDBContext _db;
 
-        public AccountController(Data.AppDBContext appDBContent)
+        public AccountController(Data.AppDBContext appDBсontext)
         {
-            _content = appDBContent;
+            _db = appDBсontext;
         }
 
         [HttpGet]
@@ -34,7 +34,7 @@ namespace SimpleMovieSearch.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await _content.User.FirstOrDefaultAsync(u => u.Email == loginModel.Email && u.Password == loginModel.Password);
+                User user = await _db.User.FirstOrDefaultAsync(u => u.Email == loginModel.Email && u.Password == loginModel.Password);
                 if (user != null)
                 {
                     await Authenticate(loginModel.Email);
@@ -58,12 +58,12 @@ namespace SimpleMovieSearch.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await _content.User.FirstOrDefaultAsync(u => u.Email == registerModel.Email);
+                User user = await _db.User.FirstOrDefaultAsync(u => u.Email == registerModel.Email);
 
                 if (user == null)
                 {
-                    _content.User.Add(new User { Email = registerModel.Email, Password = registerModel.Password });
-                    await _content.SaveChangesAsync();
+                    _db.User.Add(new User { Email = registerModel.Email, Password = registerModel.Password });
+                    await _db.SaveChangesAsync();
 
                     await Authenticate(registerModel.Email);
 
