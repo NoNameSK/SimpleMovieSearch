@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SimpleMovieSearch.Migrations
 {
-    public partial class NewInitial : Migration
+    public partial class initIdentity : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,10 +40,22 @@ namespace SimpleMovieSearch.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -98,24 +111,24 @@ namespace SimpleMovieSearch.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserVideo",
+                name: "FavoriteVideosForUser",
                 columns: table => new
                 {
-                    FavoriteVideosId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    VideoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserVideo", x => new { x.FavoriteVideosId, x.UsersId });
+                    table.PrimaryKey("PK_FavoriteVideosForUser", x => new { x.UserId, x.VideoId });
                     table.ForeignKey(
-                        name: "FK_UserVideo_User_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_FavoriteVideosForUser_User_UserId",
+                        column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserVideo_Video_FavoriteVideosId",
-                        column: x => x.FavoriteVideosId,
+                        name: "FK_FavoriteVideosForUser_Video_VideoId",
+                        column: x => x.VideoId,
                         principalTable: "Video",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -175,9 +188,9 @@ namespace SimpleMovieSearch.Migrations
                 column: "VideoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserVideo_UsersId",
-                table: "UserVideo",
-                column: "UsersId");
+                name: "IX_FavoriteVideosForUser_VideoId",
+                table: "FavoriteVideosForUser",
+                column: "VideoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Video_AuthorId",
@@ -191,7 +204,7 @@ namespace SimpleMovieSearch.Migrations
                 name: "CommunicationsVideoGenres");
 
             migrationBuilder.DropTable(
-                name: "UserVideo");
+                name: "FavoriteVideosForUser");
 
             migrationBuilder.DropTable(
                 name: "Genre");

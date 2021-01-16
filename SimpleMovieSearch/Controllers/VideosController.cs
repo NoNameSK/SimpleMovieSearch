@@ -8,6 +8,9 @@ using SimpleMovieSearch.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace SimpleMovieSearch.Controllers
 {
@@ -15,10 +18,14 @@ namespace SimpleMovieSearch.Controllers
     {
 
         private readonly AppDBContext _db;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public VideosController(AppDBContext сontext)
+        public VideosController(AppDBContext db, UserManager<User> userManager, SignInManager<User> signInManager)
         {
-            _db = сontext;
+            _db = db;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [Route("Videos/List")]
@@ -153,7 +160,7 @@ namespace SimpleMovieSearch.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
             var video = await _db.Video.FindAsync(id);
 
@@ -164,6 +171,7 @@ namespace SimpleMovieSearch.Controllers
             return RedirectToAction("List");
         }
 
+        [Authorize]
         public async Task<IActionResult> AddToFavorite(int? id)
         {
 
@@ -178,9 +186,20 @@ namespace SimpleMovieSearch.Controllers
         [HttpPost, ActionName("AddToFavorite")]
         public async Task<IActionResult> AddToFavoriteConfirmed(int id)
         {
-            var video = await _db.Video.FindAsync(id);
+            var video =  _db.Video.Include(x => x.Users).FirstOrDefault(x => x.Id == id);
 
-            _db.User.FirstOrDefault(x => x.Email == User.Identity.Name).FavoriteVideos.Add(video);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+
+            var favoritesVideos = new Dictionary<string, object>
+            {
+                ["UserId"] = userId,
+                ["VideoId"] = id
+            };
+
+            var user = _db.User.FirstOrDefault(x => x.Id == userId);
+
+            _db.Add(favoritesVideos);
+
             _db.SaveChanges();
 
             return RedirectToAction("List");

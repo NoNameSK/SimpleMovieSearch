@@ -15,11 +15,11 @@ namespace SimpleMovieSearch.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly Data.AppDBContext _db;
+        private readonly AppDBContext _db;
 
-        public AccountController(Data.AppDBContext appDBсontext)
+        public AccountController(AppDBContext db)
         {
-            _db = appDBсontext;
+            _db = db;
         }
 
         [HttpGet]

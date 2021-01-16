@@ -9,6 +9,6 @@ namespace SimpleMovieSearch.ViewModels
     public class UserFavoriteViewModel
     {
         public User User { get; set; }
-        public IEnumerable<Video> FavoriteVideos { get; set; }
+        public List<Video> FavoriteVideos { get; set; }
     }
 }

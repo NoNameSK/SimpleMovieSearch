@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Identity.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using SimpleMovieSearch.Data;
@@ -10,6 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using SimpleMovieSearch.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNet.Identity;
 
 namespace SimpleMovieSearch
 {
@@ -24,38 +28,40 @@ namespace SimpleMovieSearch
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<Data.AppDBContext>(options => options.UseSqlServer(_confsting.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(_confsting.GetConnectionString("DefaultConnection")));
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            services.AddSession();
-            services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<AppDBContext>()
+                .AddDefaultTokenProviders()
+                .AddSignInManager();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => 
                 {
                     options.LoginPath = new PathString("/Account/Login");
                 });
-            services.AddControllersWithViews();
-
-            services.AddMemoryCache();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseSession();
             app.UseDeveloperExceptionPage();
             app.UseStatusCodePages();
             app.UseStaticFiles();
-            //app.UseMvcWithDefaultRoute();
+
+            app.UseRouting();
 
             app.UseAuthentication();    
             app.UseAuthorization();
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
-                routes.MapRoute(name: "categoryFilter", template: "Video/{action}/{category?}", defaults: new { Controller = "Car", action = "List" });
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "delete",
+                    pattern: "Videos/Delete/{id?}"
+                    );
             });
 
 

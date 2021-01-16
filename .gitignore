@@ -170,3 +170,5 @@ SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/FavoriteVideos/AllFavoriteVideos.
 SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/FavoriteVideos/AddToFavorite.cshtml.g.cs
 SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/Account/Register.cshtml.g.cs
 SimpleMovieSearch/obj/Debug/net5.0/Razor/Views/Account/Login.cshtml.g.cs
+*.dll
+SimpleMovieSearch/obj/Debug/net5.0/SimpleMovieSearch.MvcApplicationPartsAssemblyInfo.cs
