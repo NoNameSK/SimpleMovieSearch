@@ -9,11 +9,18 @@ namespace SimpleMovieSearch.ViewModels
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Не указан Email")]
+        [Required]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Не указан пароль")]
+        [Required]
         [DataType(DataType.Password)]
+        [Display(Name = "Пароль")]
         public string Password { get; set; }
+
+        [Display(Name = "Запомнить?")]
+        public bool RememberMe { get; set; }
+
+        public string ReturnUrl { get; set; }
     }
 }

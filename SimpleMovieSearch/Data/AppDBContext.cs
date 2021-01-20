@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SimpleMovieSearch.Models;
 using System;
 using System.Collections.Generic;
@@ -7,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace SimpleMovieSearch.Data
 {
-    public class AppDBContext : DbContext
+    public class AppDBContext : IdentityDbContext<User>
     {
-        public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
+        public AppDBContext(DbContextOptions<AppDBContext> options) 
+            : base(options)
         {
         }
 
@@ -52,10 +55,9 @@ namespace SimpleMovieSearch.Data
                 .Entity<User>()
                 .HasMany(x => x.FavoriteVideos)
                 .WithMany(x => x.Users)
-                .UsingEntity<Dictionary<string, object>>(
-                "FavoriteVideosForUser",
-                d => d.HasOne<Video>().WithMany().HasForeignKey("VideoId"),
-                d => d.HasOne<User>().WithMany().HasForeignKey("UserId")
+                .UsingEntity<FavoriteUserVideos>(
+                    d => d.HasOne<Video>().WithMany().HasForeignKey("VideoId"),
+                    d => d.HasOne<User>().WithMany().HasForeignKey("UserId")
                 );
 
             var authorMikle = new Author { Id = 1, Name = "Майкл", Surname = "Бенджамин Бэй", Age = 55, Description = "американский кинорежиссёр и кинопродюсер. Один из самых кассовых режиссёров планеты — его картины собрали в прокате более 5,7 млрд долларов США." };
@@ -105,6 +107,7 @@ namespace SimpleMovieSearch.Data
             modelBuilder.Entity<Video>()
                 .HasData(dune, jentelmens, sixInstage);
 
+            base.OnModelCreating(modelBuilder);
         }
-        }
+    }
 }

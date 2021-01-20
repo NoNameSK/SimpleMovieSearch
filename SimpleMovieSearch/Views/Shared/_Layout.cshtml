@@ -26,23 +26,21 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav right">
-                    @{ 
-                        if (User.Identity.IsAuthenticated == false)
+                    @{
+                        if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" href="/Account/Login">Login</a>
-                            </li>
                             <li class="nav-item right">
-                                <a class="nav-link" href="/Account/Register">Register</a>
+                                <form method="post" asp-controller="Account" asp-action="Logout">
+                                    <input type="submit" value="Logout" />
+                                </form>
                             </li>
                         }
                         else
                         {
-                            <li class="nav-item right">
-                                <a class="nav-link" href="/Account/Logout">Logout</a>
-                            </li>
+                            <a asp-controller="Account" asp-action="Login">Вход</a>
+                            <a asp-controller="Account" asp-action="Register">Регистрация </a>
                         }
-                     }
+                    }
                 </ul>
             </div>
         </nav>

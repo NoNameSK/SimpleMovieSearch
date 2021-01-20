@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -186,21 +188,19 @@ namespace SimpleMovieSearch.Controllers
         [HttpPost, ActionName("AddToFavorite")]
         public async Task<IActionResult> AddToFavoriteConfirmed(int id)
         {
-            var video =  _db.Video.Include(x => x.Users).FirstOrDefault(x => x.Id == id);
+            //var video =  _db.Video.Include(x => x.Users).FirstOrDefault(x => x.Id == id);
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+            var userId = _userManager.GetUserId(User);
 
-            var favoritesVideos = new Dictionary<string, object>
+            //var favoriteUsersVideos = new FavoriteUserVideos { UserId = userId, VideoId = id };
+
+            _db.Add(new FavoriteUserVideos
             {
-                ["UserId"] = userId,
-                ["VideoId"] = id
-            };
+                UserId = userId,
+                VideoId = id
+            });
 
-            var user = _db.User.FirstOrDefault(x => x.Id == userId);
-
-            _db.Add(favoritesVideos);
-
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             return RedirectToAction("List");
         }

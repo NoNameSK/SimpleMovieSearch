@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace SimpleMovieSearch
 {
@@ -30,16 +31,10 @@ namespace SimpleMovieSearch
         {
             services.AddDbContext<AppDBContext>(options => options.UseSqlServer(_confsting.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<AppDBContext>()
-                .AddDefaultTokenProviders()
-                .AddSignInManager();
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<AppDBContext>();
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => 
-                {
-                    options.LoginPath = new PathString("/Account/Login");
-                });
+            services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -47,6 +42,9 @@ namespace SimpleMovieSearch
             app.UseDeveloperExceptionPage();
             app.UseStatusCodePages();
             app.UseStaticFiles();
+
+            var options = new RewriteOptions();
+            app.UseRewriter(options);
 
             app.UseRouting();
 
